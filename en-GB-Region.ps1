@@ -1,25 +1,23 @@
-<gs:GlobalizationServices xmlns:gs="urn:longhornGlobalizationUnattend"> 
-<!--User List-->
-<gs:UserList>
-    <gs:User UserID="Current" CopySettingsToDefaultUserAcct="true" CopySettingsToSystemAcct="true"/> 
-</gs:UserList>
-<!-- user locale -->
-<gs:UserLocale> 
-    <gs:Locale Name="en-GB" SetAsCurrent="true"/> 
-</gs:UserLocale>
-<!-- system locale -->
-<gs:SystemLocale Name="en-GB"/>
-<!-- GeoID -->
-<gs:LocationPreferences> 
-    <gs:GeoID Value="242"/> 
-</gs:LocationPreferences>
-<gs:MUILanguagePreferences>
-	<gs:MUILanguage Value="en-GB"/>
-	<gs:MUIFallback Value="en-US"/>
-</gs:MUILanguagePreferences>
-<!-- input preferences -->
-<gs:InputPreferences>
-    <!--en-GB-->
-    <gs:InputLanguageID Action="add" ID="0809:00000809" Default="true"/> 
-</gs:InputPreferences>
-</gs:GlobalizationServices>
+#variables
+$regionalsettingsURL = "https://github.com/nickscarpenter/Azure/blob/master/en-GB-Region.xml
+$RegionalSettings = "D:\en-GB-Region.xml"
+
+
+#downdload regional settings file
+$webclient = New-Object System.Net.WebClient
+$webclient.DownloadFile($regionalsettingsURL,$RegionalSettings)
+
+
+# Set Locale, language etc. 
+& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$RegionalSettings`""
+
+# Set languages/culture. Not needed perse.
+Set-WinSystemLocale en-GB
+Set-WinUserLanguageList -LanguageList en-GB -Force
+Set-Culture -CultureInfo en-GB
+Set-WinHomeLocation -GeoId 242
+Set-TimeZone -Name "GMT Standard Time"
+
+# restart virtual machine to apply regional settings to current user. You could also do a logoff and login.
+Start-sleep -Seconds 40
+Restart-Computer
